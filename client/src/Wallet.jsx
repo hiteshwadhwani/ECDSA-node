@@ -9,7 +9,6 @@ function Wallet({ address, setAddress, balance, setBalance,secret, setSecretKey,
   async function onChange(evt) {
     setSecretKey(evt.target.value)
     const publicKey = secp256k1.getPublicKey(secret)
-    const signedMessage = signMessage(message)
     const address = toHex(getAddress(publicKey))
     setAddress(address)
     if (address) {
@@ -20,14 +19,6 @@ function Wallet({ address, setAddress, balance, setBalance,secret, setSecretKey,
     } else {
       setBalance(0);
     }
-  }
-
-  async function signMessage(msg) {
-    return secp256k1.sign(hashMessage(msg), secret, {recovered: true});
-  }
-
-  function hashMessage(message) {
-    return keccak256(utf8ToBytes(message));
   }
 
   function getAddress(publicKey) {

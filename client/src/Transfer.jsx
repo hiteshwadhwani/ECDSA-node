@@ -1,34 +1,42 @@
 import { useState } from "react";
 import server from "./server";
-import {secp256k1} from 'ethereum-cryptography/secp256k1'
-import {toHex, utf8ToBytes} from 'ethereum-cryptography/utils'
-import {keccak256} from 'ethereum-cryptography/keccak'
+import { secp256k1 } from "ethereum-cryptography/secp256k1";
+import { toHex, utf8ToBytes } from "ethereum-cryptography/utils";
+import { keccak256 } from "ethereum-cryptography/keccak";
 
-function Transfer({ address, setBalance, secret, setSecretKey,message,setMessage }) {
+function Transfer({
+  address,
+  setBalance,
+  secret,
+  setSecretKey,
+  message,
+  setMessage,
+}) {
   const [sendAmount, setSendAmount] = useState("");
   const [recipient, setRecipient] = useState("");
 
   const setValue = (setter) => (evt) => setter(evt.target.value);
 
   async function transfer(evt) {
-    const signedMessage = signMessage(message)
     evt.preventDefault();
     try {
+      const signedMessage = await signMessage(message)
+      console.log(signedMessage)
       const {
         data: { balance },
       } = await server.post(`send`, {
-        signedMessage: signedMessage,
+        sender: address,
         amount: parseInt(sendAmount),
         recipient,
       });
       setBalance(balance);
-    } catch (ex) {
-      alert(ex.response.data.message);
+    } catch (error) {
+      console.log(error)
     }
   }
 
   async function signMessage(msg) {
-    return secp256k1.sign(hashMessage(msg), secret, {recovered: true});
+    return secp256k1.sign(hashMessage(msg), secret);
   }
 
   function hashMessage(message) {

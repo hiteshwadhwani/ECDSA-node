@@ -19,7 +19,13 @@ app.get("/balance/:address", (req, res) => {
 });
 
 app.post("/send", (req, res) => {
-  const { signedMessage, recipient, amount } = req.body;
+  const { sender, recipient, amount } = req.body;
+
+  // const [sig, recoveryBit] = signedMessage;
+
+  // console.log(signedMessage)
+
+  // console.log({sig, recoveryBit})
 
   setInitialBalance(sender);
   setInitialBalance(recipient);
