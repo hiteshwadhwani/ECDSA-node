@@ -3,9 +3,7 @@ import {secp256k1} from 'ethereum-cryptography/secp256k1'
 import {toHex, utf8ToBytes} from 'ethereum-cryptography/utils'
 import {keccak256} from 'ethereum-cryptography/keccak'
 
-import {useState} from 'react'
-
-function Wallet({ address, setAddress, balance, setBalance,secret, setSecretKey,message,setMessage  }){
+function Wallet({ address, setAddress, balance, setBalance,secret, setSecretKey}){
   async function onChange(evt) {
     setSecretKey(evt.target.value)
     const publicKey = secp256k1.getPublicKey(secret)
@@ -30,11 +28,6 @@ function Wallet({ address, setAddress, balance, setBalance,secret, setSecretKey,
   return (
     <div className="container wallet">
       <h1>Your Wallet</h1>
-
-      <label>
-        Write a Message
-        <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} />
-      </label>
 
       <label>
         Enter secret Key

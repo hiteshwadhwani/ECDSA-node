@@ -7,8 +7,7 @@ import { keccak256 } from "ethereum-cryptography/keccak";
 function Transfer({
   address,
   setBalance,
-  secret,
-  message,
+  secret
 }) {
   const [sendAmount, setSendAmount] = useState("");
   const [recipient, setRecipient] = useState("");
@@ -18,7 +17,12 @@ function Transfer({
   async function transfer(evt) {
     evt.preventDefault();
     try {
-      const signedMessage = await signMessage(message)
+      const msg = JSON.stringify({
+        sender: address,
+        amount: parseInt(sendAmount),
+        recipient
+      })
+      const signedMessage = await signMessage(msg)
       const signature = JSON.stringify({
         ...signedMessage, s: signedMessage.s.toString(), r: signedMessage.r.toString()
       })
@@ -28,7 +32,6 @@ function Transfer({
       } = await server.post(`send`, {
         publicKey:publicKey,
         signedMessage: signature,
-        msg:message,
         sender: address,
         amount: parseInt(sendAmount),
         recipient,

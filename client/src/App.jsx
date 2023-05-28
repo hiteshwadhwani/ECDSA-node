@@ -7,7 +7,6 @@ function App() {
   const [balance, setBalance] = useState(0);
   const [address, setAddress] = useState("");
   const [secret, setSecretKey] = useState("");
-  const [message, setMessage] = useState("");
 
   return (
     <div className="app">
@@ -18,14 +17,11 @@ function App() {
         setBalance={setBalance}
         address={address}
         setAddress={setAddress}
-        message={message}
-        setMessage={setMessage}
       />
       <Transfer
         setBalance={setBalance}
         address={address}
         secret={secret}
-        message={message}
       />
     </div>
   );
