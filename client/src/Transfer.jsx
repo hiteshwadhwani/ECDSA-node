@@ -8,9 +8,7 @@ function Transfer({
   address,
   setBalance,
   secret,
-  setSecretKey,
   message,
-  setMessage,
 }) {
   const [sendAmount, setSendAmount] = useState("");
   const [recipient, setRecipient] = useState("");
@@ -21,10 +19,16 @@ function Transfer({
     evt.preventDefault();
     try {
       const signedMessage = await signMessage(message)
-      console.log(signedMessage)
+      const signature = JSON.stringify({
+        ...signedMessage, s: signedMessage.s.toString(), r: signedMessage.r.toString()
+      })
+      const publicKey = toHex(secp256k1.getPublicKey(secret))
       const {
         data: { balance },
       } = await server.post(`send`, {
+        publicKey:publicKey,
+        signedMessage: signature,
+        msg:message,
         sender: address,
         amount: parseInt(sendAmount),
         recipient,

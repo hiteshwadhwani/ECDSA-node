@@ -2,6 +2,9 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const port = 3042;
+const secp = require("ethereum-cryptography/secp256k1");
+const { keccak256 } = require("ethereum-cryptography/keccak");
+const {utf8ToBytes} = require('ethereum-cryptography/utils')
 
 app.use(cors());
 app.use(express.json());
@@ -18,24 +21,39 @@ app.get("/balance/:address", (req, res) => {
   res.send({ balance });
 });
 
+function hashMessage(message) {
+  return keccak256(utf8ToBytes(message));
+}
+
 app.post("/send", (req, res) => {
-  const { sender, recipient, amount } = req.body;
+  try {
+    const { publicKey, signedMessage, msg, sender, recipient, amount } = req.body;
 
-  // const [sig, recoveryBit] = signedMessage;
+    const signtaure = JSON.parse(signedMessage)
 
-  // console.log(signedMessage)
+    const isVerified = secp.secp256k1.verify({
+      r: BigInt(signtaure.r),
+      s: BigInt(signtaure.s)
+    }, hashMessage(msg), publicKey)
 
-  // console.log({sig, recoveryBit})
+    if(isVerified){
+      setInitialBalance(sender);
+      setInitialBalance(recipient);
 
-  setInitialBalance(sender);
-  setInitialBalance(recipient);
-
-  if (balances[sender] < amount) {
-    res.status(400).send({ message: "Not enough funds!" });
-  } else {
-    balances[sender] -= amount;
-    balances[recipient] += amount;
-    res.send({ balance: balances[sender] });
+      if (balances[sender] < amount) {
+        res.status(400).send({ message: "Not enough funds!" });
+      } else {
+        balances[sender] -= amount;
+        balances[recipient] += amount;
+        res.send({ balance: balances[sender], isVerified });
+      }
+    }
+    else{
+      res.send({verified})
+    }    
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error });
   }
 });
 

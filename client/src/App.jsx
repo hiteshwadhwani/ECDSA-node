@@ -25,9 +25,7 @@ function App() {
         setBalance={setBalance}
         address={address}
         secret={secret}
-        setSecretKey={setSecretKey}
         message={message}
-        setMessage={setMessage}
       />
     </div>
   );
